@@ -28,9 +28,9 @@ $(document).ready(function(){
   });
 
   $("#caveNarration").click(function() {
-
       $(".combatWindow").show();
       $("#caveNarration").hide();
+      //propogate enemies
       setTimeout(() => { combatStart(deck.giantRat)},1000);
   });
 
@@ -42,6 +42,7 @@ $(document).ready(function(){
   $("#cryptNarration").click(function() {
     $("#cryptNarration").hide();
   });
+
 
   //choose enemy's target
   function doAction(character, target) {

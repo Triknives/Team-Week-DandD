@@ -1,4 +1,3 @@
-
 import {Character} from './character.js';
 import $ from 'jquery';
 import 'bootstrap';
@@ -9,13 +8,16 @@ import {Item} from './item.js';
 import * as deck from './deck.js';
 
 const player = deck.brawler;
+let enemyArray;
 
 export function combatStart(enemies) {
-  let enemyArray = enemies; //enemy array changes depending on location or combat specs?
+  enemyArray = enemies; //enemy array changes depending on location or combat specs?
+  console.log("combat function started");
   $('.enemySide').html(''); //clears enemy slots
 
 
   for (let i = 0; i < enemyArray.length; i++) { //populates enemies
+    console.log("forLoopEnemies");
     $('.enemySide').append(`
       <div class="enemy${i+1}">
       <div id="health0">
@@ -33,37 +35,45 @@ export function combatStart(enemies) {
 
     let deadCount = 0;
 
+    setTimeout(() => {
     while (deadCount < enemyArray.length && player.health.value > 0) {
-
-      player.health.value -= 10;
-      enemyArray[0].health.value -= 10;
-
+      console.log("while loop");
       deadCount = 0;
-      for (let j = 0; j < enemyArray.length; j++) {
-        if (enemyArray[j].health.value < 1) {
-          deadCount += 1;
-        } else {
-          //Attack
-          //wait
-        }
-      }
-      let move = false;
-      while(move === false) {
-        console.log('inside while');
-        setTimeout(() => {
-          console.log('inside timeout');
-        $('#attackSubmit').click(function() {
-            let target = enemyArray[parseInt($("input[name=target]:checked").val())];
-            let damage = player.attack(target);
 
-            move = true;
-          }, 2000);
-        });
-      }
+      (async function fight() {
+        console.log("async started");
+        let attackReturn = await playerAttack(); //players turn
+        console.log("player attack supposedy happened");
+        if (attackReturn === true) {
+          for (let j = 0; j < enemyArray.length; j++) { //enemies turn
+            if (enemyArray[j].health.value < 1) {
+              console.log("enemy dead if");
+              deadCount += 1;
+            } else {
+              console.log("enemy attack");
+              setTimeout(enemyArray[j].attack(player), 3000);
+            }
+          }//end of enemies turn
+        }
+      })();
     }
+
+    //win eval
     if (player.health.value > 0) {
       alert("you win!")
     } else {
       console.log("you lose :( ")
     }
+  },3000);
+
+
+  }
+
+  function playerAttack(){
+    console.log("player attack function");
+    $('#attackSubmit').click(function() {
+      let target = enemyArray[parseInt($("input[name=target]:checked").val())];
+      let damage = player.attack(target);
+      return true;
+    });
   }
